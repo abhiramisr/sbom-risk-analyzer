@@ -19,7 +19,7 @@ An AI-powered Software Bill of Materials (SBOM) vulnerability analyzer built on 
 
 ## Features
 
-- **SBOM Parsing**: CycloneDX JSON format support
+- **SBOM Parsing**: CycloneDX - JSON format support
 - **Vulnerability Lookup**: OSV database integration for CVE discovery
 - **EPSS Enrichment**: Exploit Prediction Scoring System for exploitation probability
 - **CISA KEV Check**: Known Exploited Vulnerabilities catalog validation
@@ -172,4 +172,4 @@ MIT
 
 ## Author
 
-Built by [Your Name] as a security engineering portfolio project.
+Built by Abhirami Sasikala Rishikesavan as a security engineering portfolio project.
