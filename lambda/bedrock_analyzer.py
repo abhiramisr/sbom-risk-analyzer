@@ -194,7 +194,7 @@ STRICT RULES:
 7. Do not invent specific version numbers for remediation. Use "Upgrade to latest patched version" if unknown.
 8. Do NOT include explanations, markdown, or disclaimers.
 9. contextual_priority MUST be copied verbatim from risk_score.
-10. If input is empty, malformed, or missing required fields, output {"findings": []}.
+10. 10. If input is empty, malformed, or missing required fields, output {{"findings": []}}.
 11. Only report vulnerabilities explicitly present in VULNERABILITY_DATA.
 12. Do not duplicate CVEs per component.
 13. If you cannot comply exactly, output: {{"findings": []}}
