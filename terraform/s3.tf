@@ -87,9 +87,14 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "output" {
   }
 }
 
-# Enforce TLS - input bucket
+# Enforce TLS + KMS encryption - input bucket
 resource "aws_s3_bucket_policy" "input_tls" {
   bucket = aws_s3_bucket.input.id
+
+  depends_on = [
+    aws_s3_bucket_public_access_block.input,
+    aws_s3_bucket_ownership_controls.input
+  ]
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -108,14 +113,43 @@ resource "aws_s3_bucket_policy" "input_tls" {
             "aws:SecureTransport" = "false"
           }
         }
+      },
+      {
+        Sid       = "DenyUnencryptedUploads"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:PutObject"
+        Resource  = "${aws_s3_bucket.input.arn}/*"
+        Condition = {
+          StringNotEquals = {
+            "s3:x-amz-server-side-encryption" = "aws:kms"
+          }
+        }
+      },
+      {
+        Sid       = "DenyWrongKMSKey"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:PutObject"
+        Resource  = "${aws_s3_bucket.input.arn}/*"
+        Condition = {
+          StringNotEquals = {
+            "s3:x-amz-server-side-encryption-aws-kms-key-id" = aws_kms_key.sbom_encryption.arn
+          }
+        }
       }
     ]
   })
 }
 
-# Enforce TLS - output bucket
+# Enforce TLS + KMS encryption - output bucket
 resource "aws_s3_bucket_policy" "output_tls" {
   bucket = aws_s3_bucket.output.id
+
+  depends_on = [
+    aws_s3_bucket_public_access_block.output,
+    aws_s3_bucket_ownership_controls.output
+  ]
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -134,7 +168,88 @@ resource "aws_s3_bucket_policy" "output_tls" {
             "aws:SecureTransport" = "false"
           }
         }
+      },
+      {
+        Sid       = "DenyUnencryptedUploads"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:PutObject"
+        Resource  = "${aws_s3_bucket.output.arn}/*"
+        Condition = {
+          StringNotEquals = {
+            "s3:x-amz-server-side-encryption" = "aws:kms"
+          }
+        }
+      },
+      {
+        Sid       = "DenyWrongKMSKey"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:PutObject"
+        Resource  = "${aws_s3_bucket.output.arn}/*"
+        Condition = {
+          StringNotEquals = {
+            "s3:x-amz-server-side-encryption-aws-kms-key-id" = aws_kms_key.sbom_encryption.arn
+          }
+        }
       }
     ]
   })
+}
+
+# Lifecycle Rules - Prevent infinite version accumulation
+resource "aws_s3_bucket_lifecycle_configuration" "input" {
+  bucket = aws_s3_bucket.input.id
+
+  rule {
+    id     = "cleanup-old-versions"
+    status = "Enabled"
+
+    filter {}
+
+    noncurrent_version_expiration {
+      noncurrent_days = 30
+    }
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "output" {
+  bucket = aws_s3_bucket.output.id
+
+  rule {
+    id     = "cleanup-old-versions"
+    status = "Enabled"
+
+    filter {}
+
+    noncurrent_version_expiration {
+      noncurrent_days = 30
+    }
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+  }
+}
+
+# Ownership Controls - Prevent ACL edge cases
+
+resource "aws_s3_bucket_ownership_controls" "input" {
+  bucket = aws_s3_bucket.input.id
+
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
+
+resource "aws_s3_bucket_ownership_controls" "output" {
+  bucket = aws_s3_bucket.output.id
+
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
 }
