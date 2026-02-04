@@ -165,6 +165,9 @@ sbom-risk-analyzer/
 - [ ] Security Hub integration
 - [ ] Slack/Teams notifications
 - [ ] HTML report generation
+- [ ] Zero-day impact analyzer — reverse lookup to find all applications affected by a newly disclosed CVE
+- [ ] SBOM inventory database with DynamoDB
+- [ ] Real-time alerts via SNS when KEV catalog updates match stored packages
 
 ## Known Risks & Mitigations
 
