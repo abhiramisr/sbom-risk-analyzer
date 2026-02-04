@@ -142,7 +142,6 @@ resource "aws_iam_role_policy" "lambda_marketplace" {
 }
 
 # Policy: SQS access for Lambda
-# 
 # resource "aws_iam_role_policy" "lambda_sqs" {
 #   name = "sqs-access"
 #   role = aws_iam_role.lambda_execution.id
