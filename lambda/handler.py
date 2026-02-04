@@ -1,6 +1,7 @@
 import json
 import boto3
 import logging
+import os
 from vuln_lookup import lookup_vulnerabilities
 from enrichment import enrich_vulnerabilities
 from bedrock_analyzer import analyze_with_bedrock
@@ -65,7 +66,9 @@ def lambda_handler(event, context):
             Bucket=output_bucket,
             Key=output_key,
             Body=json.dumps(report, indent=2),
-            ContentType='application/json'
+            ContentType='application/json',
+            ServerSideEncryption='aws:kms',
+            SSEKMSKeyId=f'alias/sbom-risk-analyzer-{os.environ.get("ENVIRONMENT", "dev")}'
         )
         logger.info(f"Report written to s3://{output_bucket}/{output_key}")
         
