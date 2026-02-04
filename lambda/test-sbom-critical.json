@@ -1,0 +1,31 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "version": 1,
+  "components": [
+    {
+      "type": "library",
+      "name": "log4j-core",
+      "version": "2.14.1",
+      "purl": "pkg:maven/org.apache.logging.log4j/log4j-core@2.14.1"
+    },
+    {
+      "type": "library",
+      "name": "spring-webmvc",
+      "version": "5.3.17",
+      "purl": "pkg:maven/org.springframework/spring-webmvc@5.3.17"
+    },
+    {
+      "type": "library",
+      "name": "apache-commons-text",
+      "version": "1.9",
+      "purl": "pkg:maven/org.apache.commons/commons-text@1.9"
+    },
+    {
+      "type": "library",
+      "name": "minimist",
+      "version": "1.2.5",
+      "purl": "pkg:npm/minimist@1.2.5"
+    }
+  ]
+}
